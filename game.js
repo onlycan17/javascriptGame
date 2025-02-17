@@ -18,7 +18,7 @@ let celebrationInterval = null;
 let particles = [];
 
 // 물리 상수
-const gravity = 0.5;
+const gravity = 0.45;
 const ballElasticity = 0.8;
 const floorY = canvas.height - 50; // 바닥 위치
 
@@ -321,6 +321,21 @@ function resetBall() {
   ball.vy = 0;
   // 파티클 초기화
   particles = [];
+
+  // 사용자와 PC 초기 위치로 리셋
+  user.x = 100;
+  user.y = floorY - user.height;
+  user.dx = 0;
+  user.vy = 0;
+  user.onGround = true;
+  user.powerShot = false;
+
+  pc.x = canvas.width - 100 - pc.width;
+  pc.y = floorY - pc.height;
+  pc.dx = 0;
+  pc.vy = 0;
+  pc.onGround = true;
+  pc.powerShot = false;
 }
 
 // 그리기 함수: 배경, 골대, 플레이어, 공, 점수 및 남은 시간 표시
