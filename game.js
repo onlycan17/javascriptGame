@@ -17,6 +17,19 @@ let celebrationInterval = null;
 // 파티클 효과 관련 변수
 let particles = [];
 
+// 이미지 리소스 로드
+const backgroundImage = new Image();
+backgroundImage.src = './images/background.jpg';
+
+const goalImage = new Image();
+goalImage.src = './images/goal.webp';
+
+const userImage = new Image();
+userImage.src = './images/user.webp';
+
+const pcImage = new Image();
+pcImage.src = './images/pc.webp';
+
 // 물리 상수
 const gravity = 0.45;
 const ballElasticity = 0.8;
@@ -115,7 +128,13 @@ document.addEventListener('keydown', (e) => {
       user.onGround = false;
     }
   } else if (e.code === 'Space') {
-    if (circleRectCollision(ball, user)) {
+    // 공이 사용자와 근접한 경우 (충돌 또는 일정 거리 이내)
+    const userCenterX = user.x + user.width / 2;
+    const userCenterY = user.y + user.height / 2;
+    const dx = ball.x - userCenterX;
+    const dy = ball.y - userCenterY;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    if (circleRectCollision(ball, user) || distance < 60) {
       user.powerShot = true;
     }
   }
@@ -182,7 +201,7 @@ function drawParticles() {
 function celebrateGoal(scoringTeam) {
   paused = true;
   celebrationMessage = `GOAL! ${scoringTeam} SCORE!`;
-  celebrationCountdown = 5;
+  celebrationCountdown = 3;
   createParticles();
   
   // 매 초마다 카운트다운 갱신
@@ -299,7 +318,12 @@ function update() {
 function handlePlayerBallCollision(player, type) {
   let impulseX = 4;
   const impulseY = -15; // 상향 충격: 공이 더 높이 날아감
-  const multiplier = (player.powerShot) ? 2 : 1;
+  let multiplier;
+  if (type === 'user') {
+    multiplier = (user.powerShot) ? 3 : 1;
+  } else {
+    multiplier = (pc.powerShot) ? 2 : 1;
+  }
   
   if (type === 'user') {
     impulseX = multiplier * (user.dx !== 0 ? user.dx : (ball.x < user.x + user.width / 2 ? -4 : 4));
@@ -342,24 +366,20 @@ function resetBall() {
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   
-  // 배경: 하늘과 잔디
-  ctx.fillStyle = '#87CEEB';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  // 배경 이미지 그리기
+  ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
   
-  ctx.fillStyle = '#2ecc71';
-  ctx.fillRect(0, floorY, canvas.width, canvas.height - floorY);
-  
-  // 골대 그리기 (노란색)
-  ctx.fillStyle = 'yellow';
+  // 골대 사각형 그리기 (원래는 이미지로 그려짐)
+  ctx.fillStyle = '#FF0000'; // 왼쪽 골대 (빨간색)
   ctx.fillRect(leftGoal.x, leftGoal.y, leftGoal.width, leftGoal.height);
+  
+  ctx.fillStyle = '#0000FF'; // 오른쪽 골대 (파란색)
   ctx.fillRect(rightGoal.x, rightGoal.y, rightGoal.width, rightGoal.height);
   
-  // 플레이어 그리기
-  ctx.fillStyle = 'blue';
-  ctx.fillRect(user.x, user.y, user.width, user.height);
-  
-  ctx.fillStyle = 'red';
-  ctx.fillRect(pc.x, pc.y, pc.width, pc.height);
+  // 플레이어 이미지 그리기
+  ctx.drawImage(userImage, user.x, user.y, user.width, user.height);
+  // PC 이미지 그리기
+  ctx.drawImage(pcImage, pc.x, pc.y, pc.width, pc.height);
   
   // 공 그리기 (흰색 원)
   ctx.fillStyle = 'white';
@@ -383,7 +403,7 @@ function draw() {
     ctx.fillStyle = 'orange';
     ctx.font = '50px Arial';
     ctx.fillText(celebrationMessage, canvas.width/2 - ctx.measureText(celebrationMessage).width/2, canvas.height/2 - 30);
-    let countdownText = `Restarting in ${celebrationCountdown}...`;
+    let countdownText = `${celebrationCountdown}초 후 게임 재개...`;
     ctx.font = '40px Arial';
     ctx.fillText(countdownText, canvas.width/2 - ctx.measureText(countdownText).width/2, canvas.height/2 + 30);
   }
