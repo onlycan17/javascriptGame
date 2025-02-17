@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <!-- 모바일 최적화를 위한 뷰포트 설정 및 가로모드 권장 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, orientation=landscape">
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>섭리 평화축구 컨트롤 축구 게임</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #87CEEB;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+    canvas {
+      background-color: #2ecc71;
+      border: 2px solid #fff;
+      width: 100%;
+      max-width: 800px;
+      height: auto;
+    }
+    /* 조이스틱 컨테이너: flexbox를 사용하여 내부 노브를 중앙에 배치 */
+    #joystickContainer {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      width: 120px;
+      height: 120px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 50%;
+      touch-action: none;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    /* 조이스틱 노브: 컨테이너의 중앙에 배치되도록 함 */
+    #joystickKnob {
+      width: 60px;
+      height: 60px;
+      background: rgba(0,0,0,0.5);
+      border-radius: 50%;
+      touch-action: none;
+    }
+    /* 점프 버튼 (우측 하단) */
+    #btnJump {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 80px;
+      height: 80px;
+      background-color: #fff;
+      border: 2px solid #000;
+      border-radius: 50%;
+      font-size: 18px;
+      text-align: center;
+      line-height: 80px;
+      user-select: none;
+      touch-action: none;
+      z-index: 10;
+    }
+    /* 게임 시작 오버레이 (전체 화면 전환을 위한 사용자 액션 요구) */
+    #fullscreenOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.8);
+      color: white;
+      font-size: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <!-- 게임 시작 오버레이 추가: 사용자가 터치하면 전체 화면 전환 -->
+  <div id="fullscreenOverlay">게임 시작하기</div>
+
+  <canvas id="gameCanvas" width="800" height="600"></canvas>
+  <div id="joystickContainer">
+    <div id="joystickKnob"></div>
+  </div>
+  <div id="btnJump">Jump</div>
+  <script src="mobile_game.js"></script>
+</body>
+</html>
