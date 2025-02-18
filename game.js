@@ -30,6 +30,24 @@ userImage.src = './images/user.png';
 const pcImage = new Image();
 pcImage.src = './images/pc.png';
 
+// **추가: 배경음악 설정**
+const bgMusic = new Audio('./audio/soccer_music_bgm.mp3');
+bgMusic.loop = true;
+bgMusic.volume = 0.5;
+
+// 사용자의 첫 클릭, 키 입력 또는 터치 시 배경음악 재생 (브라우저 자동 재생 정책 대응)
+function startBgMusic() {
+  bgMusic.play().catch(error => {
+    console.error("배경 음악 재생 실패:", error);
+  });
+  document.removeEventListener('click', startBgMusic);
+  document.removeEventListener('keydown', startBgMusic);
+  document.removeEventListener('touchstart', startBgMusic);
+}
+document.addEventListener('click', startBgMusic);
+document.addEventListener('keydown', startBgMusic);
+document.addEventListener('touchstart', startBgMusic);
+
 // 물리 상수
 const gravity = 0.45;
 const ballElasticity = 0.8;
