@@ -17,6 +17,13 @@
       height: 100vh;
       overflow: hidden;
     }
+    header#gameHeader {
+      text-align: center;
+      padding: 10px;
+      background-color: rgba(255,255,255,0.8);
+      width: 100%;
+      box-sizing: border-box;
+    }
     canvas {
       background-color: #2ecc71;
       border: 2px solid #fff;
@@ -85,6 +92,12 @@
 <body>
   <!-- 게임 시작 오버레이 추가: 사용자가 터치하면 전체 화면 전환 -->
   <div id="fullscreenOverlay">게임 시작하기</div>
+
+  <!-- 추가: 게임 제목 및 안내 메시지 -->
+  <header id="gameHeader">
+    <h1>섭리 평화축구 컨트롤 축구 게임</h1>
+    <p>화려한 골 축하와 음악을 즐겨보세요!</p>
+  </header>
 
   <canvas id="gameCanvas" width="800" height="600"></canvas>
   <div id="joystickContainer">

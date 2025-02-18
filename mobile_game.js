@@ -2,6 +2,36 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+// ===== 추가: 이미지 및 배경음악 로드 =====
+const backgroundImage = new Image();
+backgroundImage.src = './images/background.jpg';
+
+const goalImage = new Image();
+goalImage.src = './images/goal.webp';
+
+const userImage = new Image();
+userImage.src = './images/user.png';
+
+const pcImage = new Image();
+pcImage.src = './images/pc.png';
+
+const bgMusic = new Audio('./audio/soccer_music_bgm.mp3');
+bgMusic.loop = true;
+bgMusic.volume = 0.5;
+
+function startBgMusic() {
+  bgMusic.play().catch(error => {
+    console.error("배경 음악 재생 실패:", error);
+  });
+  document.removeEventListener('click', startBgMusic);
+  document.removeEventListener('touchstart', startBgMusic);
+  document.removeEventListener('keydown', startBgMusic);
+}
+document.addEventListener('click', startBgMusic);
+document.addEventListener('touchstart', startBgMusic);
+document.addEventListener('keydown', startBgMusic);
+// ===== 끝 =====
+
 // 전역 변수 (게임 상태 및 레이아웃 관련)
 let gameDuration = 300; // 5분
 let timeRemaining = gameDuration;
@@ -468,35 +498,38 @@ function resetBall() {
 // 그리기 함수
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  // 배경
-  ctx.fillStyle = '#87CEEB';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = '#2ecc71';
-  ctx.fillRect(0, floorY, canvas.width, canvas.height - floorY);
-  // 골대
-  ctx.fillStyle = 'yellow';
+  
+  // 배경 이미지 그리기
+  ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+
+  // 골대 그리기 (색상 변경)
+  ctx.fillStyle = '#FF0000';
   ctx.fillRect(leftGoal.x, leftGoal.y, leftGoal.width, leftGoal.height);
+  ctx.fillStyle = '#0000FF';
   ctx.fillRect(rightGoal.x, rightGoal.y, rightGoal.width, rightGoal.height);
-  // 플레이어
-  ctx.fillStyle = 'blue';
-  ctx.fillRect(user.x, user.y, user.width, user.height);
-  ctx.fillStyle = 'red';
-  ctx.fillRect(pc.x, pc.y, pc.width, pc.height);
-  // 공
+  
+  // 플레이어 이미지 그리기
+  ctx.drawImage(userImage, user.x, user.y, user.width, user.height);
+  ctx.drawImage(pcImage, pc.x, pc.y, pc.width, pc.height);
+  
+  // 공 그리기 (흰색 원)
   ctx.fillStyle = 'white';
   ctx.beginPath();
   ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
   ctx.fill();
-  // 파티클
+  
+  // 파티클 업데이트 및 그리기
   updateParticles();
   drawParticles();
-  // 점수 및 남은 시간
+  
+  // 점수 및 남은 시간 표시
   ctx.fillStyle = 'black';
   ctx.font = '20px Arial';
   ctx.fillText(`사용자: ${userScore}`, 50, 30);
   ctx.fillText(`PC: ${pcScore}`, canvas.width - 150, 30);
   ctx.fillText(`남은 시간: ${formatTime(timeRemaining)}`, canvas.width / 2 - 60, 30);
-  // 축하 메시지 및 카운트다운
+  
+  // 축하 메시지 및 카운트다운 표시
   if (paused && celebrationMessage) {
     ctx.fillStyle = 'orange';
     ctx.font = '50px Arial';
