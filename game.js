@@ -17,6 +17,9 @@ let celebrationInterval = null;
 // 파티클 효과 관련 변수
 let particles = [];
 
+// **추가: 스페이스바 상태 추적 변수**
+let spacePressed = false;
+
 // 이미지 리소스 로드
 const backgroundImage = new Image();
 backgroundImage.src = './images/background.jpg';
@@ -146,21 +149,17 @@ document.addEventListener('keydown', (e) => {
       user.onGround = false;
     }
   } else if (e.code === 'Space') {
-    // 공이 사용자와 근접한 경우 (충돌 또는 일정 거리 이내)
-    const userCenterX = user.x + user.width / 2;
-    const userCenterY = user.y + user.height / 2;
-    const dx = ball.x - userCenterX;
-    const dy = ball.y - userCenterY;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-    if (circleRectCollision(ball, user) || distance < 60) {
-      user.powerShot = true;
-    }
+    // 스페이스바가 눌렸음을 기록 (충돌 시 강슛 여부는 update() 함수에서 판단)
+    spacePressed = true;
   }
 });
 
 document.addEventListener('keyup', (e) => {
   if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
     user.dx = 0;
+  }
+  if (e.code === 'Space') {
+    spacePressed = false;
   }
 });
 
@@ -315,6 +314,12 @@ function update() {
   // --- 플레이어와 공 충돌 처리 ---
   if (circleRectCollision(ball, user)) {
     if (!ball.collidedWithUser) {
+      // 스페이스바가 눌려있다면 강슛 플래그를 활성화
+      if (spacePressed) {
+        user.powerShot = true;
+      } else {
+        user.powerShot = false;
+      }
       handlePlayerBallCollision(user, 'user');
       ball.collidedWithUser = true;
     }
@@ -335,10 +340,11 @@ function update() {
 // 플레이어와 공 충돌 시, 공에 충격을 주어 포물선을 그리도록 처리
 function handlePlayerBallCollision(player, type) {
   let impulseX = 4;
-  const impulseY = -15; // 상향 충격: 공이 더 높이 날아감
+  let impulseY = -15; // 기본 상향 충격: 공이 일정 높이로 날아감
   let multiplier;
   if (type === 'user') {
-    multiplier = (user.powerShot) ? 3 : 1;
+    multiplier = (user.powerShot) ? 5 : 1; // 강한 슛이면 multiplier 5 적용
+    impulseY = (user.powerShot) ? -20 : -15; // 강한 슛 시 더 높은 충격
   } else {
     multiplier = (pc.powerShot) ? 2 : 1;
   }
