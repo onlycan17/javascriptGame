@@ -25,10 +25,10 @@ const goalImage = new Image();
 goalImage.src = './images/goal.webp';
 
 const userImage = new Image();
-userImage.src = './images/user.webp';
+userImage.src = './images/user.png';
 
 const pcImage = new Image();
-pcImage.src = './images/pc.webp';
+pcImage.src = './images/pc.png';
 
 // 물리 상수
 const gravity = 0.45;
@@ -55,8 +55,8 @@ const rightGoal = {
 // 플레이어 설정 (사용자와 PC)
 // 좌우로 약간 이동 가능하며, 점프와 강슛 기능 포함
 const playerSpeed = 3;
-const playerWidth = 30;
-const playerHeight = 60;
+const playerWidth = 90;
+const playerHeight = 90;
 // 점프 높이를 골대 높이(150px)만큼 날 수 있도록 계산: u = sqrt(2 * g * s)
 const jumpForce = -Math.sqrt(2 * gravity * goalHeight);  // 약 -12.25
 
