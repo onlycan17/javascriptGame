@@ -2,6 +2,13 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+// 스크린 높이에 따라 스케일 팩터 (기준 높이: 800px)
+let scaleFactor = 1;
+
+// 중력을 let으로 선언 (화면 높이에 따른 동적 업데이트를 위해)
+let gravity = 0.45;
+const ballElasticity = 0.8;
+
 // ===== 추가: 이미지 및 배경음악 로드 =====
 const backgroundImage = new Image();
 backgroundImage.src = './images/background.jpg';
@@ -44,10 +51,6 @@ let celebrationCountdown = 0;
 let celebrationInterval = null;
 let particles = [];
 
-// 물리 상수
-const gravity = 0.45;
-const ballElasticity = 0.8;
-
 // 화면 크기에 따라 동적으로 계산되는 값들
 let floorY, goalWidth, goalHeight, leftGoal, rightGoal, playerWidth, playerHeight, jumpForce;
 
@@ -75,6 +78,11 @@ function resizeGame() {
   canvas.style.height = window.innerHeight + "px";
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   
+  // 화면 높이에 따라 스케일 팩터 업데이트 (기준 높이 800px)
+  scaleFactor = window.innerHeight / 800;
+  // 중력 값 재조정 (화면 높이에 비례)
+  gravity = 0.45 * scaleFactor;
+  
   floorY = window.innerHeight - 50;
 
   // 골대 크기 (예: 너비 30px, 높이 150px) - 필요에 따라 조정 가능
@@ -96,9 +104,10 @@ function resizeGame() {
   // 플레이어 크기 (예: 90px x 90px)
   playerWidth = 90;
   playerHeight = 90;
-  playerSpeed = 3;
-  // 점프 높이를 골대 높이만큼 날 수 있도록: u = sqrt(2 * g * s)
-  jumpForce = -Math.sqrt(2 * gravity * goalHeight);
+  playerSpeed = 3 * scaleFactor;
+  // 점프 높이를 화면 해상도의 25% 정도로 설정 (u = sqrt(2 * g * jumpHeight))
+  let desiredJumpHeight = window.innerHeight * 0.25;
+  jumpForce = -Math.sqrt(2 * gravity * desiredJumpHeight);
 
   // 사용자와 PC 초기 위치 (화면 재설정 시 논리 좌표 기준)
   user = {
@@ -339,8 +348,9 @@ function update(dt) {
 
 // 플레이어-공 충돌 시 충격 부여
 function handlePlayerBallCollision(player, type) {
-  const BASE_IMPULSE_X = 4;     // 기본 수평 충격 값
-  const BASE_IMPULSE_Y = -15;   // 기본 수직 충격 값
+  // 기본 충격 값에 화면 높이 비례 스케일 팩터 적용
+  const BASE_IMPULSE_X = 4 * scaleFactor;     // 기본 수평 충격 값
+  const BASE_IMPULSE_Y = -15 * scaleFactor;     // 기본 수직 충격 값
   const INTENSITY_DIVISOR = 10; // 충돌 세기에 따른 속도 증가를 위한 상수
   // powerShot 플래그가 true일 경우 충격 값에 multiplier를 적용 (강슛)
   const multiplier = (player.powerShot) ? 2 : 1;
@@ -474,7 +484,7 @@ function displayWinner() {
   ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
   ctx.fillStyle = 'black';
   ctx.font = '40px Arial';
-  let message = (userScore > pcScore) ? '승리했습니다!' : (pcScore > userScore) ? '패배했습니다!' : '비겼습니다!';
+  let message = (userScore > pcScore) ? '승리했습니다! \n 축하합니다!' : (pcScore > userScore) ? '패배했습니다!' : '비겼습니다!';
   ctx.fillText(message, window.innerWidth/2 - ctx.measureText(message).width/2, window.innerHeight/2);
 }
 
