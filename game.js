@@ -55,8 +55,8 @@ const rightGoal = {
 // 플레이어 설정 (사용자와 PC)
 // 좌우로 약간 이동 가능하며, 점프와 강슛 기능 포함
 const playerSpeed = 3;
-const playerWidth = 90;
-const playerHeight = 90;
+const playerWidth = 120;
+const playerHeight = 120;
 // 점프 높이를 골대 높이(150px)만큼 날 수 있도록 계산: u = sqrt(2 * g * s)
 const jumpForce = -Math.sqrt(2 * gravity * goalHeight);  // 약 -12.25
 

@@ -2,22 +2,77 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
+  <!-- 추가: 메타 뷰포트 태그 - 모바일에서도 반응형 적용 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>화려한 골 축하 & 카운트다운</title>
   <style>
-    body {
+    /* 모든 요소에 박스 사이징을 적용하여 패딩/보더 계산에 문제 없도록 함 */
+    * {
+      box-sizing: border-box;
+    }
+    /* HTML과 Body에 100% 높이 및 세로 스크롤 제거 */
+    html, body {
       margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow-y: hidden;
+    }
+    /* Body를 Flex 컨테이너로 설정하여 자식 요소(헤더, 메인, 푸터)를 세로 배치 */
+    body {
       background-color: #87CEEB; /* 하늘색 배경 */
+      font-family: Arial, sans-serif; /* 기본 폰트 설정 */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    /* 헤더 및 푸터 스타일 */
+    header#gameHeader,
+    footer#gameFooter {
+      text-align: center;
+      padding: 15px;
+      background-color: rgba(255, 255, 255, 0.8); /* 반투명 흰색 배경 */
+      border: 2px solid #fff;
+      /* 스크롤 발생을 막기 위해 margin 제거하고 전체 폭 적용 */
+      margin: 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    /* 추가: 메인 영역 (캔버스 감싸는 영역) - 가용 공간을 채움 */
+    main {
+      flex-grow: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
     }
     canvas {
       background-color: #2ecc71; /* 잔디색 */
+      border: 2px solid #fff;
       display: block;
       margin: 0 auto;
-      border: 2px solid #fff;
+      max-width: 800px; /* 최대 너비 800px */
+      width: 100%;    /* 부모 영역에 맞춰 자동 조정 */
+      height: auto;   /* 비율 유지 */
     }
   </style>
 </head>
 <body>
-  <canvas id="gameCanvas" width="800" height="600"></canvas>
+  <!-- 헤더 영역 - 게임 제목 및 소개 메시지 -->
+  <header id="gameHeader">
+    <h1>화려한 골 축하 & 카운트다운</h1>
+    <p>멋진 순간을 경험하세요! 게임에 도전해 보세요.</p>
+  </header>
+  
+  <!-- 메인 영역으로 캔버스 감싸기 -->
+  <main>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+  </main>
+  
+  <!-- 푸터 영역 - 게임 시작 전 안내 메시지 -->
+  <footer id="gameFooter">
+    <p>게임을 시작하려면 화면을 클릭하거나 키보드를 눌러주세요.</p>
+  </footer>
+  
   <script src="game.js"></script>
 </body>
 </html>
