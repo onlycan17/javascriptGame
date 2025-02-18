@@ -341,23 +341,47 @@ function update(dt) {
 function handlePlayerBallCollision(player, type) {
   const BASE_IMPULSE_X = 4;     // 기본 수평 충격 값
   const BASE_IMPULSE_Y = -15;   // 기본 수직 충격 값
+  const INTENSITY_DIVISOR = 10; // 충돌 세기에 따른 속도 증가를 위한 상수
   // powerShot 플래그가 true일 경우 충격 값에 multiplier를 적용 (강슛)
   const multiplier = (player.powerShot) ? 2 : 1;
+  
+  const previousBallVx = ball.vx; // 충돌 전 공의 수평 속도 저장
+  
   let impulseX, impulseY;
   
   if (type === 'user') {
-    // 사용자의 현재 이동 방향 (dx)이 있을 경우 그 값을 반영, 없으면 사용자 중심을 기준으로 결정
+    // 사용자의 현재 이동 방향 (dx)이 있을 경우 그 값을 반영, 없으면 사용자 중심 기준으로 결정
     impulseX = multiplier * (user.dx !== 0 ? user.dx : (ball.x < user.x + user.width / 2 ? -BASE_IMPULSE_X : BASE_IMPULSE_X));
-    // 강슛일 경우 수직 충격도 베이스 값에 multiplier를 곱해 증가시킴
     impulseY = BASE_IMPULSE_Y * multiplier;
     user.powerShot = false;  // 강슛 사용 후 플래그 초기화
+
+    // 역방향 충돌 체크:
+    // 사용자가 움직이고 있고, 이전 공의 수평 속도가 사용자의 이동방향과 반대라면
+    if (user.dx !== 0 && (previousBallVx * user.dx < 0)) {
+      let diff = Math.abs(previousBallVx - user.dx);
+      let factor = 1 + diff / INTENSITY_DIVISOR; // 충돌 세기에 따른 multiplier 계산
+      impulseX *= factor;
+      impulseY *= factor;
+      console.log("[handlePlayerBallCollision] Reverse collision (User) - factor:", factor);
+    }
   } else {
-    // PC의 경우는 기존 방식대로 처리 (강슛 기능이 사용되지 않음)
+    // PC의 경우 기본적으로 플레이어 중심 좌표를 기준으로 처리
     impulseX = (ball.x < pc.x + pc.width / 2 ? -BASE_IMPULSE_X : BASE_IMPULSE_X);
     impulseY = BASE_IMPULSE_Y;
     pc.powerShot = false;
+
+    // 역방향 충돌 체크:
+    // PC가 움직이고 있고, 이전 공의 수평 속도가 PC의 이동방향과 반대라면
+    if (pc.dx !== 0 && (previousBallVx * pc.dx < 0)) {
+      let diff = Math.abs(previousBallVx - pc.dx);
+      let factor = 1 + diff / INTENSITY_DIVISOR;
+      impulseX *= factor;
+      impulseY *= factor;
+      console.log("[handlePlayerBallCollision] Reverse collision (PC) - factor:", factor);
+    }
   }
   
+  // 수정된 충격 값을 공에 반영
   ball.vx = impulseX;
   ball.vy = impulseY;
   console.log("[handlePlayerBallCollision]", type, "impulseX:", impulseX, "impulseY:", impulseY, "multiplier:", multiplier);
